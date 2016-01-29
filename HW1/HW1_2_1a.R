@@ -25,6 +25,8 @@ model <- train (trainx , factor(trainy) , 'nb' , trControl=tr)
 #prediction
 predictions <- predict(model, newdata=testx)
 confusionMatrix (data=predictions, testy)
+#accuracy: .732
+
 
 
 
@@ -36,3 +38,60 @@ for (i in c(3, 4, 6, 8)){
   x_vector_copy[non_values, i]=NA
 }
 
+#create training and testing sets
+datasplit <- createDataPartition(y=y_labels, p=.8, list=FALSE)
+trainx <- x_vector_copy[datasplit,]
+trainy <- y_labels[datasplit]
+testx <- x_vector_copy[-datasplit,]
+testy <- y_labels[-datasplit]
+
+#train naive bayes model
+tr <- trainControl(method='cv' , number=10)
+model <- train (trainx , factor(trainy) , 'nb' , trControl=tr)
+
+#prediction
+predictions <- predict(model, newdata=testx)
+confusionMatrix (data=predictions, testy)
+#accuracy: .7582
+
+
+
+
+##2.1c
+#create training and testing sets
+datasplit <- createDataPartition(y=y_labels, p=.8, list=FALSE)
+trainx <- x_vector[datasplit,]
+trainy <- y_labels[datasplit]
+testx <- x_vector[-datasplit,]
+testy <- y_labels[-datasplit]
+
+#train naive bayes model using klaR package
+tr <- trainControl(method='cv' , number=10)
+model <- train (trainx , factor(trainy) , 'nb' , trControl=tr)
+
+#prediction
+predictions <- predict(model, newdata=testx)
+confusionMatrix (data=predictions, testy)
+#accuracy: .732
+
+
+
+
+##2.1d
+#create data sets for training and testing
+datasplit<-createDataPartition(y=y_labels, p=.8, list=FALSE)
+trainx <- x_vector[datasplit,]
+trainy <- y_labels[datasplit]
+testx <- x_vector[-datasplit,]
+testy <- y_labels[-datasplit]
+
+#train svm
+svm <- svmlight(trainx, factor(trainy), pathsvm="/home/neeraj/Documents/UIUC/svm_light")
+labels <- predict(svm, testx)
+answers <- labels$class
+
+#accuracy
+correct <- sum(answers == testy)
+wrong <- sum(answers != testy)
+accuracy <- correct / (correct + wrong)
+accuracy
