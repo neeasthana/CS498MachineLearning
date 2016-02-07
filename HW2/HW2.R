@@ -6,7 +6,7 @@ setwd('/home/neeraj/Documents/UIUC/CS 498/CS498MachineLearning/HW2')
 library(caret)
 
 #parameters
-lambda <- c(.001, .01, .1, 1)
+lambdas <- c(.001, .01, .1, 1)
 epochs <- 50
 steps <- 300
 percent_training <- .8
@@ -21,6 +21,7 @@ raw_test_data <- read.csv('adult.test', header=FALSE, na.strings = "?")
 raw_data <- rbind(raw_train_data, raw_test_data)
 
 #Split continuous and label data
+#continuous variables: age, fnlwgt, education-num, capital-gain, capital-loss, hours-per-week
 x_vector <- raw_data[,c(1,3,5,11,12,13)]
 y_labels <- raw_data[,15]
 
@@ -41,7 +42,19 @@ valx <- otherx[-datasplit2,]
 valy <- othery[-datasplit2]
 
 ##Problem 2.5a
-#continuous variables: age, fnlwgt, education-num, capital-gain, capital-loss, hours-per-week
+hinge_loss <- function(predicted, actual){
+  return (max(0, 1 - (predicted * actual) ))
+}
+
+step <- function(lambda){
+  k <- sample(1:length(trainx), 1)
+  xex <- trainx[k]
+  yex <- trainy[k]
+}
+
+for (i in lambdas){
+  print(i)
+}
 
 ##Problem 2.5b
 
