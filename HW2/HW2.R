@@ -14,8 +14,8 @@ percent_validation <- .1
 percent_test <- .1
 num_examples_epoch_test <- 50
 steps_til_eval <- 30
-steplength_a <- 1
-steplength_b <- 1
+steplength_a <- .01
+steplength_b <- 100
 
 #read files and create data set
 raw_train_data <- read.csv('adult.data', header=FALSE, na.strings = "?")
@@ -70,10 +70,38 @@ converty <- function(y){
   }
 }
 
+convertpred <- function(val){
+  if(val >= 0){
+    return(1)
+  }
+  else{
+    return(-1)
+  }
+}
+
+accuracy <- function(x,y,a,b){
+  correct <- 0
+  wrong <- 0
+  for (i in 1:length(y)){
+    pred <- evaluate(trainx[i,], a, b)
+    pred <- convertpred(pred)
+    actual <- converty(y[i])
+    
+    if(pred == actual){
+      correct <- correct + 1 
+    } else{
+      wrong <- wrong + 1
+    }
+  }
+  return(c( (correct/(correct+wrong)), correct, wrong) )
+}
+
 for (lambda in lambdas){
   #random initialization
-  a <- runif(dim(x_vector)[2], min=-.001, max=.001)
-  b <- runif(1, min=0, max=.01)
+  #a <- runif(dim(x_vector)[2], min=-.0001, max=.0001)
+  #b <- runif(1, min=0, max=.01)
+  a <- c(0,0,0,0,0,0)
+  b <- 0
   
   #set out 50 examples for testing after every 30 steps
   ran_vals <- sample(1:dim(trainx)[1], 50)
@@ -82,8 +110,20 @@ for (lambda in lambdas){
   train_data <- trainx[-ran_vals,]
   train_labels <- trainy[-ran_vals]
   
+  accuracies <- c()
+  
   for (epoch in 1:epochs){
+    
+    num_steps <- 0
+    
     for (step in 1:steps){
+      
+      if(num_steps %% steps_til_eval == 0){
+        calc <- accuracy(accuracy_data, accuracy_labels, a, b)
+        accuracies <- c(accuracies, calc[1]) 
+        print(calc[1])
+      }
+      
       k <- sample(1:length(train_labels), 1)
       xex <- as.numeric(as.matrix( train_data[k,] ))
       yex <- converty( train_labels[k] )
@@ -95,8 +135,7 @@ for (lambda in lambdas){
       if(yex * pred >= 1){
         p1 <- lambda * a
         p2 <- 0
-      }
-      else {
+      } else {
         p1 <- (lambda * a) - (yex * xex)
         p2 <- -(yex)
       }
@@ -104,12 +143,20 @@ for (lambda in lambdas){
       #update values for a and b by gradient descent
       a <- a - (steplength * p1)
       b <- b - (steplength * p2)
+      
+      #update steps count
+      num_steps <- num_steps + 1
     }
   }
+  
+  myeval <- accuracy (valx, valy, a, b)
 }
 
 ##Problem 2.5a
+#A plot of the accuracy every 30 steps, for each value of the regularizationconstan t
 
 ##Problem 2.5b
+#Your estimate of the best value of the regularization constant, togetherwith a brief description of why you believe that is a good value.
 
 ##Problem 2.5c
+#Your estimate of the accuracy of the best classifier on held out data
