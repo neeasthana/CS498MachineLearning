@@ -45,16 +45,19 @@ testy <- othery[datasplit2]
 valx <- otherx[-datasplit2,]
 valy <- othery[-datasplit2]
 
-##Problem 2.5a
+#SVM Training
+#loss function for SVM:
 hinge_loss <- function(predicted, actual){
   return (max(0, 1 - (predicted * actual) ))
 }
 
+#evaluation for specific example x (6 items in vector) with parameters a and b
 evaluate <- function(x, a, b){
   new_x <- as.numeric(as.matrix(x))
   return (t(a) %*% new_x + b) 
 }
 
+#Change y in dataset from <=50k and >50k to -1 and 1
 converty <- function(y){
   if(y == neg_example | y == neg_example2){
     return (-1)
@@ -72,6 +75,7 @@ for (lambda in lambdas){
   a <- runif(dim(x_vector)[2], min=-.001, max=.001)
   b <- runif(1, min=0, max=.01)
   
+  #set out 50 examples for testing after every 30 steps
   ran_vals <- sample(1:dim(trainx)[1], 50)
   accuracy_data <- trainx[ran_vals, ]
   accuracy_labels <- trainy[ran_vals]
@@ -87,6 +91,7 @@ for (lambda in lambdas){
       pred <- evaluate(xex, a, b)
       steplength = 1 / ((steplength_a * epoch) + steplength_b)
       
+      #gradient vectors
       if(yex * pred >= 1){
         p1 <- lambda * a
         p2 <- 0
@@ -102,6 +107,8 @@ for (lambda in lambdas){
     }
   }
 }
+
+##Problem 2.5a
 
 ##Problem 2.5b
 
