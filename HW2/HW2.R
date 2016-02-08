@@ -14,7 +14,7 @@ percent_validation <- .1
 percent_test <- .1
 num_examples_epoch_test <- 50
 steps_til_eval <- 30
-steplength_a <- .01
+steplength_a <- .1
 steplength_b <- 100
 
 #read files and create data set
@@ -103,17 +103,20 @@ for (lambda in lambdas){
   a <- c(0,0,0,0,0,0)
   b <- 0
   
-  #set out 50 examples for testing after every 30 steps
-  ran_vals <- sample(1:dim(trainx)[1], 50)
-  accuracy_data <- trainx[ran_vals, ]
-  accuracy_labels <- trainy[ran_vals]
-  train_data <- trainx[-ran_vals,]
-  train_labels <- trainy[-ran_vals]
-  
   accuracies <- c()
+  posup <- 0
+  negup <- 0
   
   for (epoch in 1:epochs){
     
+    #set out 50 examples for testing after every 30 steps
+    ran_vals <- sample(1:dim(trainx)[1], 50)
+    accuracy_data <- trainx[ran_vals, ]
+    accuracy_labels <- trainy[ran_vals]
+    train_data <- trainx[-ran_vals,]
+    train_labels <- trainy[-ran_vals]
+    
+    #Keep track of the number of steps taken at each epoch for debugging purposes
     num_steps <- 0
     
     for (step in 1:steps){
@@ -135,9 +138,11 @@ for (lambda in lambdas){
       if(yex * pred >= 1){
         p1 <- lambda * a
         p2 <- 0
+        posup <- posup + 1
       } else {
         p1 <- (lambda * a) - (yex * xex)
         p2 <- -(yex)
+        negup <- negup + 1
       }
       
       #update values for a and b by gradient descent
