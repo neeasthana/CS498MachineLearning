@@ -1,6 +1,8 @@
 ##Neeraj Asthana (nasthan2)
 ##CS 498 HW2 Problem 2.5
 
+options(warn=-1)
+
 #environment
 setwd('/home/neeraj/Documents/UIUC/CS 498/CS498MachineLearning/HW2')
 library(caret)
@@ -173,7 +175,10 @@ for (lambda in lambdas){
   testeval <- accuracy(testx, testy, a, b)
   test_accuracies <- c(test_accuracies, testeval[1])
   
-  plot(1:length(accuracies) , accuracies, type="o", col="blue")
+  jpeg(file=paste(toString(lambda),".jpg") )
+  title <- paste("Lambda = ", toString(lambda), " Accuracies Graph")
+  plot(1:length(accuracies) , accuracies, type="o", col="blue", xlab ="Sample Time", ylab ="Accuracy", main = title)
+  dev.off()
 }
 
 ##Problem 2.5a
