@@ -14,8 +14,8 @@ percent_validation <- .1
 percent_test <- .1
 num_examples_epoch_test <- 50
 steps_til_eval <- 30
-steplength_a <- .1
-steplength_b <- 100
+steplength_a <- .01
+steplength_b <- 50
 
 #read files and create data set
 raw_train_data <- read.csv('adult.data', header=FALSE, na.strings = "?")
@@ -26,6 +26,11 @@ raw_data <- rbind(raw_train_data, raw_test_data, make.row.names=FALSE)
 #continuous variables: age, fnlwgt, education-num, capital-gain, capital-loss, hours-per-week
 x_vector <- raw_data[,c(1,3,5,11,12,13)]
 y_labels <- raw_data[,15]
+
+#add scaling
+for (i in 1:6){
+  x_vector[i] <- scale(as.numeric(as.matrix(x_vector[i])))
+}
 
 #Mentions of positive and negative examples for reference
 neg_example <- y_labels[1]
@@ -83,7 +88,7 @@ accuracy <- function(x,y,a,b){
   correct <- 0
   wrong <- 0
   for (i in 1:length(y)){
-    pred <- evaluate(trainx[i,], a, b)
+    pred <- evaluate(x[i,], a, b)
     pred <- convertpred(pred)
     actual <- converty(y[i])
     
@@ -95,6 +100,10 @@ accuracy <- function(x,y,a,b){
   }
   return(c( (correct/(correct+wrong)), correct, wrong) )
 }
+
+#array of validation accuracies
+val_accuracies = c()
+test_accuracies = c()
 
 for (lambda in lambdas){
   #random initialization
@@ -124,15 +133,19 @@ for (lambda in lambdas){
       if(num_steps %% steps_til_eval == 0){
         calc <- accuracy(accuracy_data, accuracy_labels, a, b)
         accuracies <- c(accuracies, calc[1]) 
-        print(calc[1])
+        #print(calc[1])
       }
       
       k <- sample(1:length(train_labels), 1)
+      while(is.na( converty( train_labels[k] ) )){
+        k <- sample(1:length(train_labels), 1)
+      }
       xex <- as.numeric(as.matrix( train_data[k,] ))
       yex <- converty( train_labels[k] )
       
       pred <- evaluate(xex, a, b)
       steplength = 1 / ((steplength_a * epoch) + steplength_b)
+      
       
       #gradient vectors
       if(yex * pred >= 1){
@@ -154,14 +167,30 @@ for (lambda in lambdas){
     }
   }
   
-  myeval <- accuracy (valx, valy, a, b)
+  valeval <- accuracy (valx, valy, a, b)
+  val_accuracies <- c(val_accuracies, valeval[1])
+  
+  testeval <- accuracy(testx, testy, a, b)
+  test_accuracies <- c(test_accuracies, testeval[1])
+  
+  plot(1:length(accuracies) , accuracies, type="o", col="blue")
 }
 
 ##Problem 2.5a
-#A plot of the accuracy every 30 steps, for each value of the regularizationconstan t
+#A plot of the accuracy every 30 steps, for each value of the regularization constant
+#plotted from within the SVM function
 
 ##Problem 2.5b
-#Your estimate of the best value of the regularization constant, togetherwith a brief description of why you believe that is a good value.
+#Your estimate of the best value of the regularization constant, together with a brief description of why you believe that is a good value.
+max_index <- 1
+for(i in 1:length(val_accuracies)){
+  if (val_accuracies[i] >= val_accuracies[max_index]){
+    max_index <- i
+  }
+}
+max_lambda <- lambdas[max_index]
+max_lambda
 
 ##Problem 2.5c
 #Your estimate of the accuracy of the best classifier on held out data
+test_accuracies[max_index]
