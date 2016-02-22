@@ -1,0 +1,7 @@
+#R history
+/HW2/.Rhistory
+
+#Training sets
+pubfig_kaggle_eval.txt
+pubfig_train_50000_pairs.txt
+
