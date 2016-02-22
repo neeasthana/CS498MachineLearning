@@ -5,6 +5,7 @@
 options(warn=-1)
 library(caret)
 library(klaR)
+library(randomForest)
 
 #load data
 setwd('/home/neeraj/Documents/UIUC/CS 498/CS498MachineLearning/HW3')
@@ -15,21 +16,44 @@ y_labels <- raw_train_data[,1]
 face1 <- x_vector[,c(1,73)]
 face2 <- x_vector[,c(74:146)]
 
-#create training and testing sets
-datasplit <- createDataPartition(y=y_labels, p=.8, list=FALSE)
-trainx <- x_vector[datasplit,]
-trainy <- y_labels[datasplit]
-otherx <- x_vector[-datasplit,]
-othery <- y_labels[-datasplit]
-next_datasplit <- createDataPartition(y=y_labels, p=.5, list=FALSE)
-valx <- otherx[next_datasplit,]
-valy <- othery[next_datasplit]
-testx <- otherx[-next_datasplit,]
-testx <- othery[-next_datasplit]
+
 
 ##Problem 1 part 1 - Linear SVM
+#data held out for testing
+datasplit <- createDataPartition(y=y_labels, p=.1, list=FALSE)
+testx <- x_vector[datasplit,]
+testy <- y_labels[datasplit]
+otherx <- x_vector[-datasplit,]
+othery <- y_labels[-datasplit]
+
 lambdas <- c(.0001, .001,.01,.1,1)
-accuracies <- c()
+val_accuracies <- c()
+train_accuracies <- c()
+test_accuracies <- c()
+for (lambda in lambdas){
+  #create training and testing sets
+  next_datasplit <- createDataPartition(y=othery, p=(8/9), list=FALSE)
+  trainx <- otherx[next_datasplit,]
+  trainy <- othery[next_datasplit]
+  valx <- otherx[-next_datasplit,]
+  valy <- othery[-next_datasplit]
+  
+  #train SVM
+  op <- paste("-c", sprintf('%f', lambda), sep=" ")
+  svm <- svmlight(trainx, trainy, pathsvm="/home/neeraj/Documents/UIUC/svm_light", svm.options=op)
+  
+  #predict values from SVM model
+  trainpred <- predict(svm, trainx)$class
+  valpred <- predict(svm, valx)$class
+  testpred <- predict(svm, testx)$class
+  
+  #accuracy calculations
+  train_accuracies = c(train_accuracies, sum(trainpred==trainy)/length(trainy))
+  val_accuracies = c(val_accuracies, sum(valpred==valy)/length(valy))
+  test_accuracies = c(test_accuracies, sum(testpred==testy)/length(testy))
+}
+
+
 
 ##Problem 1 part 2 - Naive Bayes
 trscore<-array(dim=10)
@@ -77,3 +101,19 @@ for (wi in 1:10){
 }
 accuracy_train <- sum(trscore) / length(trscore)
 accuracy_test <- sum(tescore) / length(tescore)
+
+
+##Problem 1 part 3 - Random Forest
+datasplit <- createDataPartition(y=y_labels, p=.9, list=FALSE)
+trainx <- x_vector[datasplit,]
+trainy <- y_labels[datasplit]
+testx <- x_vector[-datasplit,]
+testy <- y_labels[-datasplit]
+
+rf <- randomForest(trainx, trainy)
+
+trainpred <- predict(rf, trainx)
+testpred <- predict(rf, testx)
+train_accuracy <- sum((trainpred >= .5) == trainy)/length(trainy)
+test_accuracy <- sum((testpred >= .5) == testy)/length(testy)
+#train accuracy: 1, test accuracy: 0.8063613
