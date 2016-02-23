@@ -168,4 +168,36 @@ val3_accuracy
 ##Problem 3
 n <- names
 f <- as.formula(paste("label ~", paste(n[!n %in% "label"], collapse = " + ")))
-nn <- neuralnet(f,data=scaled_raw,hidden=c(40,10),linear.output=T)
+nn <- neuralnet(f,data=scaled_raw[1:20000,],hidden=c(20,5),linear.output=FALSE)
+
+pr.nn <- compute(nn,scaled_raw[,2:147])
+pr.nn_ <- pr.nn$net.result*(max(scaled_raw[,1])-min(scaled_raw[,1]))+min(scaled_raw[,1])
+pr.nn_[pr.nn_ > .5] = 1
+pr.nn_[pr.nn_ <= .5] = 0
+sum(pr.nn_ == y_labels) / length(y_labels)
+
+pr.nn <- compute(nn,val1_data)
+pr.nn_ <- pr.nn$net.result*(max(scaled_raw[,1])-min(scaled_raw[,1]))+min(scaled_raw[,1])
+pr.nn_[pr.nn_ > .5] = 1
+pr.nn_[pr.nn_ <= .5] = 0
+sum(pr.nn_ == val1_sol) / length(val1_sol)
+
+pr.nn <- compute(nn,val2_data)
+pr.nn_ <- pr.nn$net.result*(max(scaled_raw[,1])-min(scaled_raw[,1]))+min(scaled_raw[,1])
+pr.nn_[pr.nn_ > .5] = 1
+pr.nn_[pr.nn_ <= .5] = 0
+sum(pr.nn_ == val2_sol) / length(val2_sol)
+
+pr.nn <- compute(nn,val3_data)
+pr.nn_ <- pr.nn$net.result*(max(scaled_raw[,1])-min(scaled_raw[,1]))+min(scaled_raw[,1])
+pr.nn_[pr.nn_ > .5] = 1
+pr.nn_[pr.nn_ <= .5] = 0
+sum(pr.nn_ == val3_sol) / length(val3_sol)
+
+
+pr.nn <- compute(nn,test_data)
+pr.nn_ <- pr.nn$net.result*(max(scaled_raw[,1])-min(scaled_raw[,1]))+min(scaled_raw[,1])
+pr.nn_[pr.nn_ > .5] = 1
+pr.nn_[pr.nn_ <= .5] = 0
+newt <- c(0, pr.nn_)
+write.table(newt, "new_final.csv", sep=",")
