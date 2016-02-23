@@ -167,4 +167,4 @@ test_accuracy <- sum((testpred >= .5) == testy)/length(testy)
 ##Problem 3
 n <- names
 f <- as.formula(paste("label ~", paste(n[!n %in% "label"], collapse = " + ")))
-nn <- neuralnet(f,data=train_,hidden=c(40,10),linear.output=T)
+nn <- neuralnet(f,data=scaled_raw,hidden=c(40,10),linear.output=T)
