@@ -1,5 +1,5 @@
 #R history
-/HW2/.Rhistory
+*.Rhistory
 
 #Training sets
 *.txt
