@@ -147,18 +147,19 @@ accuracy_val3 <- mean(val3score)
 
 
 ##Problem 1 part 3 - Random Forest
-datasplit <- createDataPartition(y=y_labels, p=.9, list=FALSE)
-trainx <- x_vector[datasplit,]
-trainy <- y_labels[datasplit]
-testx <- x_vector[-datasplit,]
-testy <- y_labels[-datasplit]
+rf <- randomForest(x_vector, y_labels)
 
-rf <- randomForest(trainx, trainy)
-
-trainpred <- predict(rf, trainx)
-testpred <- predict(rf, testx)
-train_accuracy <- sum((trainpred >= .5) == trainy)/length(trainy)
-test_accuracy <- sum((testpred >= .5) == testy)/length(testy)
+trainpred <- predict(rf, raw_train_data)
+val1pred <- predict(rf, val1_data)
+val2pred <- predict(rf, val2_data)
+val3pred <- predict(rf, val3_data)
+train_accuracy <- sum((trainpred >= .5) == y_labels)/length(y_labels)
+val1_accuracy <- sum((val1pred >= .5) == val1_sol)/length(val1_sol)
+val2_accuracy <- sum((val2pred >= .5) == val2_sol)/length(val2_sol)
+val3_accuracy <- sum((val3pred >= .5) == val3_sol)/length(val3_sol)
+val1_accuracy
+val2_accuracy
+val3_accuracy
 #train accuracy: 1, test accuracy: 0.8063613
 
 ##Problem 2
