@@ -1,8 +1,9 @@
-#R history
+#Hide all R history
 *.Rhistory
 
-#Training sets
+#Hide all large Training sets
 *.txt
+*.dat
 pubfig_kaggle_eval.txt
 pubfig_train_50000_pairs.txt
 
