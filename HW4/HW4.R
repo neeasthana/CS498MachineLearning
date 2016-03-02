@@ -32,9 +32,12 @@ splom(iris_data[,c(1:4)], groups=iris_data$class,
 
 ##Problem 3.4b - Now obtain the first two principal components of the data. Plot the data on those two principal components alone, again showing each species with a different marker. Has this plot introduced significant distortions? Explain
 iris_features <- iris_data[,c(1,2,3,4)]
-covmat <- cov(iris_features)
+pca <- prcomp(iris_features, center = TRUE, scale. = TRUE)
+secondpca <- princomp(iris_featues, cor = TRUE, scores= TRUE)
+plot(secondpca$scores[,c(1,2)], col=iris_data[,5])
 
 ##Problem 3.4c - Now use PLS1 to obtain two discriminative directions, and project thedata on to those directions. Does the plot look better? Explain Keep inmind that the most common error here is to forget that the X and the Yin PLS1 are centered - i.e. we subtract the mean.
+
 
 ##Problem 3.5
 
