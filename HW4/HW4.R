@@ -3,6 +3,8 @@
 
 ##Environment Setup
 library(lattice)
+library(plsdepot)
+library(ggplot2)
 setwd('/home/neeraj/Documents/UIUC/CS 498/CS498MachineLearning/HW4')
 
 ##Problem 3.4
@@ -30,15 +32,38 @@ splom(iris_data[,c(1:4)], groups=iris_data$class,
                points=list(pch=pchr),
                text=list(species_names)))
 
-##Problem 3.4b - Now obtain the first two principal components of the data. Plot the data on those two principal components alone, again showing each species with a different marker. Has this plot introduced significant distortions? Explain
+##Problem 3.4b
 iris_features <- iris_data[,c(1,2,3,4)]
 pca <- prcomp(iris_features, center = TRUE, scale. = TRUE)
-secondpca <- princomp(iris_featues, cor = TRUE, scores= TRUE)
-plot(secondpca$scores[,c(1,2)], col=iris_data[,5])
+plot(pca$x[,1], pca$x[,2], col=iris_data[,5], xlab = "Principal Component 1", ylab = "Principal Component 2")
 
-##Problem 3.4c - Now use PLS1 to obtain two discriminative directions, and project thedata on to those directions. Does the plot look better? Explain Keep inmind that the most common error here is to forget that the X and the Yin PLS1 are centered - i.e. we subtract the mean.
-
+##Problem 3.4c
+hot_vectors <- matrix(0, 150, 3)
+hot_vectors[1:50,1] <- 1
+hot_vectors[51:100,2] <- 1
+hot_vectors[101:150,3] <- 1
+pls1 <- plsreg2(iris_features, hot_vectors)
+plot(pls1$x.scores[,1], pls1$x.scores[,2], col=iris_data[,5])
 
 ##Problem 3.5
+wine_data <- read.csv("wine.data", header=FALSE)
+wine_features <- wine_data[,-1]
+wine_labels <- wine_data[,1]
+
+##Problem 3.5a
+covmat <- cov(wine_features)
+eig <- eigen(covmat, symmetric=FALSE)
+print(eig$values)
+plot(eig$values, type="b")
+
+##Problem 3.5b
+counts <- t(eig$vectors[,1:3])
+barplot(counts, width=.1, space=1, col=colors, legend = c("component 1", "component 2", "component 3"))
+princip2 <- prcomp(wine_features, center = TRUE, scale. = TRUE)
+barplot(t(princip2$x[,1:3]), width=.1, space=1, col=colors, legend = c("component 1", "component 2", "component 3"))
+
+##Problem 3.5c
+plot(princip2$x[,1:2],col="white", pch=3)
+text(princip2$x[,1:2], col=wine_labels, labels = wine_labels)
 
 ##Problem 3.7
