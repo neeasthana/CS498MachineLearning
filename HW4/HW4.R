@@ -45,6 +45,11 @@ hot_vectors[101:150,3] <- 1
 pls1 <- plsreg2(iris_features, hot_vectors)
 plot(pls1$x.scores[,1], pls1$x.scores[,2], col=iris_data[,5])
 
+
+
+
+
+
 ##Problem 3.5
 wine_data <- read.csv("wine.data", header=FALSE)
 wine_features <- wine_data[,-1]
@@ -66,4 +71,20 @@ barplot(t(princip2$x[,1:3]), width=.1, space=1, col=colors, legend = c("componen
 plot(princip2$x[,1:2],col="white", pch=3)
 text(princip2$x[,1:2], col=wine_labels, labels = wine_labels)
 
+
+
+
+
+
 ##Problem 3.7
+cancer_data <- read.csv("wdbc.data", header = FALSE)
+cancer_id <- cancer_data[,1]
+cancer_labels <- cancer_data[,2]
+cancer_features <- cancer_data[,-c(1,2)]
+
+##Problem 3.7a
+princip3 <- prcomp(cancer_features, center=TRUE, scale. = TRUE)
+
+##Problem 3.7b
+
+##Problem 3.7c
