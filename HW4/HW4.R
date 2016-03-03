@@ -99,6 +99,7 @@ cancer_hot_vectors <- matrix(0, 569, 2)
 cancer_hot_vectors[cancer_labels == "B",1] <- 1
 cancer_hot_vectors[cancer_labels == "M",2] <- 1
 cancer_pls1 <- plsreg2(cancer_features, cancer_hot_vectors, comps=3)
-title37b <- "Problem 3.7a - 3d plot of breast cancer data projected onto the first 3 Discriminative Directions"
+title37b <- "Problem 3.7b - Breast Cancer Data Projected onto First 3 Discriminative Directions"
 plot3d2 <- scatterplot3d(cancer_pls1$x.scores[cancer_labels == "M",1:3], color = "red", angle=40, main = title37b)
 plot3d$points3d(cancer_pls1$x.scores[cancer_labels != "M",1:3], col = "blue")
+
