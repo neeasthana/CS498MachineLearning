@@ -15,19 +15,16 @@ vocab <- read.csv("vocab.nips.txt")
 documents <- read.csv("docword.nips.txt", sep = " ", skip = 3, header = FALSE)
 colnames(documents) <- c("document", "word_id", "count")
 
-#set delta values
-pis <- matrix(1/topics,1,topics)
-deltas <- matrix(0, num_documents, topics)
-probs <- matrix(0,topics,num_vocab_words)
-
 #create documents
 vecs <- matrix(0,num_documents,num_vocab_words)
 for(i in 1:num_words){
   vecs[documents[i,1], documents[i,2]] = documents[i,3]
 }
 
-#Initial clustering
-#set p's for topics
+#set initial values for pis and p's (probs in this code)
+pis <- matrix(1/topics,1,topics)
+probs <- matrix(0,topics,num_vocab_words)
+#set probs to be random values that sum to 1 for each topic 
 for(i in 1:topics){
   x <- runif(num_vocab_words)
   rowvals <- x / sum(x)
@@ -36,6 +33,17 @@ for(i in 1:topics){
 
 
 #E Step
+#function to calculate the expected value of log liklihood:
+logliklihood <- function(){
+  inner <- vecs %*% t(log(probs))
+  woweights <- matrix(0,num_documents, topics)
+  #add logs of the pis
+  for(i in seq(topics)){
+    woweights[,i] <- inner[,i] + log(pis[i])
+  }
+  #calculate w_ij
+  
+}
 
 #M Step
 
