@@ -109,3 +109,102 @@ nature <- readJPEG("nature.jpg")
 ocean <- readJPEG("ocean.jpg")
 polarlights <- readJPEG("polarlights.jpg")
 
+empic <- function(pic, clusters){
+  stop_criteria <- .00001
+  num_pixels <- prod(dim(pic))/3
+  height <- dim(pic)[1]
+  width <- dim(pic)[2]
+  
+  #get a set of all of the pixels together
+  pixels <- matrix(0,num_pixels,3)
+  for(i in seq(height)){
+    for(j in seq(width)){
+      pixels[((i-1)*width)+j,] <- pic[i,j,]
+    }
+  }
+  
+  tesing <- array(0,c(height, width,3))
+  for(i in seq(height)){
+    for(j in seq(width)){
+      tesing[i,j,] <- pixels[(i-1)*width+j,]
+    }
+  }
+  
+  pixels<-scale(pixels)
+  
+  pis <- matrix(1/clusters,1,clusters)
+  ranvals <- runif(3*clusters)
+  #set means to be random values that sum to 1 for each cluster mean
+  means <- matrix(ranvals, nrow=clusters)
+  
+  #EM steps
+  Qs <- c()
+  while(TRUE){
+    #E Step - calculate the expected value of log liklihood:
+    inner <- matrix(0,num_pixels, clusters)
+    for(i in seq(clusters)){
+      dist <- t(t(pixels)-means[i,])
+      inner[,i] <- (-.5) * rowSums(dist^2)
+    }
+    #calculate wijs
+    top <- exp(inner) %*% diag(pis[1:clusters])
+    bottom <- rowSums(top)
+    wijs <- top/bottom
+    #calculate Q
+    Q <- sum(inner*wijs)
+    print(Q)
+    Qs <- c(Qs, Q)
+    
+    #M step
+    for(j in seq(clusters)){
+      #Update p's with additive smoothing
+      top <- colSums(pixels * wijs[,j]) #+ smoothing_constant
+      bottom <- sum(wijs[,j]) #+ (smoothing_constant * num_pixels)
+      means[j,] <-top/bottom
+      
+      #update pis
+      pis[j] <- sum(wijs[,j]) / num_pixels
+    }
+    
+    #stopping rule
+    if(length(Qs) > 1){
+      if(Q - Qs[length(Qs)-1] < stop_criteria){
+        break
+      }
+    }
+  }
+  
+  #Construct final image
+  final_img <- array(0,c(height, width,3))
+  for(i in seq(height)){
+    for(j in seq(width)){
+      index <- (i-1)*width + j
+      point <- pixels[index,]
+      meanseg <- which(wijs[index,] == max(wijs[index,]))
+       final_img[i,j,] <- means[meanseg,]*attr(pixels, 'scaled:scale') + attr(pixels, 'scaled:center')
+    }
+  }
+  return(final_img)
+}
+
+writeJPEG(empic(balloons,10), "balloons_segmented10.jpg",quality = 1)
+writeJPEG(empic(balloons,20), "balloons_segmented20.jpg",quality = 1)
+writeJPEG(empic(balloons,50), "balloons_segmented50.jpg",quality = 1)
+
+writeJPEG(empic(mountains,10), "mountains_segmented10.jpg",quality = 1)
+writeJPEG(empic(mountains,20), "mountains_segmented20.jpg",quality = 1)
+writeJPEG(empic(mountains,50), "mountains_segmented50.jpg",quality = 1)
+
+writeJPEG(empic(nature,10), "nature_segmented10.jpg",quality = 1)
+writeJPEG(empic(nature,20), "nature_segmented20.jpg",quality = 1)
+writeJPEG(empic(nature,50), "nature_segmented50.jpg",quality = 1)
+
+writeJPEG(empic(ocean,10), "ocean_segmented10.jpg",quality = 1)
+writeJPEG(empic(ocean,20), "ocean_segmented20.jpg",quality = 1)
+writeJPEG(empic(ocean,50), "ocean_segmented50.jpg",quality = 1)
+
+writeJPEG(empic(polarlights,20), "polarlights_segmented201.jpg",quality = 1)
+writeJPEG(empic(polarlights,20), "polarlights_segmented202.jpg",quality = 1)
+writeJPEG(empic(polarlights,20), "polarlights_segmented203.jpg",quality = 1)
+writeJPEG(empic(polarlights,20), "polarlights_segmented204.jpg",quality = 1)
+writeJPEG(empic(polarlights,20), "polarlights_segmented205.jpg",quality = 1)
