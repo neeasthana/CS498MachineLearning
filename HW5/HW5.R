@@ -1,6 +1,7 @@
 
 
 library(matrixStats)
+library(jpeg)
 
 ##Problem 1
 
@@ -10,12 +11,12 @@ num_vocab_words <- 12419
 num_words <- 746316
 topics <- 30
 smoothing_constant <- .00025
-stop_criteria <- .1
+stop_criteria <- .001
 
 #Setup
 #read in files
 setwd("/home/neeraj/Documents/UIUC/CS 498/CS498MachineLearning/HW5")
-vocab <- read.csv("vocab.nips.txt")
+vocab <- unlist(read.csv("vocab.nips.txt",stringsAsFactors = FALSE))
 documents <- read.csv("docword.nips.txt", sep = " ", skip = 3, header = FALSE)
 colnames(documents) <- c("document", "word_id", "count")
 
@@ -34,8 +35,6 @@ for(i in 1:topics){
   rowvals <- x / sum(x)
   probs[i,] <- rowvals
 }
-
-
 
 Qs <- c()
 while(TRUE){
@@ -84,5 +83,29 @@ while(TRUE){
   }
 }
 
+#pis plot
+plot(unlist(as.list(pis)), type='l', ylab = "probability", xlab="topic", main = "Probability a Topic is Selected")
+
+tab <- c()
+#10 highest occuring words per topic
+for(i in seq(topics)){
+  max10 <- sort(probs[i,], decreasing = TRUE)[10]
+  tab <- c(tab, vocab[which(probs[i,] >= max10)][1:10])
+  print(paste("Topic", i , ":"))
+}
+tab <- matrix(tab, nrow = 30)
+rownames(tab) <- paste("Topic", seq(topics))
+
+
+
+
+
 
 #Problem 2
+#read in images
+balloons <- readJPEG("balloons.jpg")
+mountains <- readJPEG("mountains.jpg")
+nature <- readJPEG("nature.jpg")
+ocean <- readJPEG("ocean.jpg")
+polarlights <- readJPEG("polarlights.jpg")
+
