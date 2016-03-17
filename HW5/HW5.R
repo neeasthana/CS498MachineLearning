@@ -1,5 +1,7 @@
 
 
+library(matrixStats)
+
 ##Problem 1
 
 #Constants
@@ -7,6 +9,8 @@ num_documents <- 1500
 num_vocab_words <- 12419 
 num_words <- 746316
 topics <- 30
+smoothing_constant <- .00025
+stop_criteria <- .1
 
 #Setup
 #read in files
@@ -32,22 +36,53 @@ for(i in 1:topics){
 }
 
 
-#E Step
-#function to calculate the expected value of log liklihood:
-logliklihood <- function(){
-  inner <- vecs %*% t(log(probs))
-  woweights <- matrix(0,num_documents, topics)
+
+Qs <- c()
+while(TRUE){
+  #E Step - calculate the expected value of log liklihood:
+  inner <- vecs %*% t(log(probs)) #[1500*30] sums of features multiplied by probs for each doc and cluster
+  woweights <- matrix(0,num_documents, topics) #inner + probablity of each cluster 
   #add logs of the pis
   for(i in seq(topics)){
     woweights[,i] <- inner[,i] + log(pis[i])
   }
-  #calculate w_ij
+  #calculate w_ij s
+  wijs <- matrix(0,num_documents, topics)
+  Ajs <- woweights
+  rowmax <- apply(woweights, 1, max)
+  thirdterms <- matrix(0,num_documents)
+  for(i in seq(num_documents)){
+    thirdterms[i] <- logSumExp(Ajs[i,] - rowmax[i])
+  }
+  w <- Ajs - unlist(as.list(rowmax - thirdterms))
+  unnormalwijs <- exp(w) #must normalize these weights to sum to 1
+  for(i in seq(num_documents)){
+    wijs[i,] = unnormalwijs[i,] / sum(unnormalwijs[i,])
+  }
+  #final multiplication and sum
+  finalvals <- woweights*wijs
+  Q <- sum(finalvals)
+  print(Q)
+  Qs <- c(Qs, Q)
   
+  #M Step - update pis and probs
+  for(j in seq(topics)){
+    #Update p's with additive smoothing
+    top <- colSums(vecs * wijs[,j]) + smoothing_constant
+    bottom <- sum(rowSums(vecs) * wijs[,j]) + (smoothing_constant * num_vocab_words)
+    probs[j,] <-top/bottom
+    
+    #update pis
+    pis[j] <- sum(wijs[,j]) / num_documents
+  }
+  
+  #stopping rule
+  if(length(Qs) > 1){
+    if(Q - Qs[length(Qs)-1] < stop_criteria){
+      break
+    }
+  }
 }
-
-#M Step
-
-#EM Combined
 
 
 #Problem 2
