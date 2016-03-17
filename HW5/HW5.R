@@ -1,10 +1,10 @@
-
+##Neeraj Asthana (nasthan2)
+##CS 498 HW5
 
 library(matrixStats)
 library(jpeg)
 
 ##Problem 1
-
 #Constants
 num_documents <- 1500 
 num_vocab_words <- 12419 
