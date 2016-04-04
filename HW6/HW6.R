@@ -11,15 +11,18 @@ library(glmnet)
 ##Problem 1 - linear regression
 
 #setup
-setwd("~/Documents/UIUC/CS 498/CS498MachineLearning/HW6/")
+setwd("~/Documents/UIUC/CS 498/CS498MachineLearning/HW6/Geographical Original of Music")
 
-#read in csv file
-raw_data <- read.csv("creditcard.csv", skip=1, header = TRUE)
-x <- as.matrix(raw_data[,seq(2,24)])
-y <- as.factor(raw_data[,25])
+#read in csv file and create features and predictors
+raw_data <- read.csv("default_plus_chromatic_features_1059_tracks.txt", header = FALSE)
+num_features <- dim(raw_data)[2]
+num_examples <- dim(raw_data)[1]
+x <- raw_data[,1:(num_features-2)]
+latitude <- raw_data[,(num_features-1)]
+longitude <- raw_data[,num_features]
 
-
-
+#Simple linear regression
+latfit <- lm(latitude ~ as.matrix(x))
 
 ##Problem 2 - logistic regression
 
@@ -31,7 +34,7 @@ raw_data <- read.csv("creditcard.csv", skip=1, header = TRUE)
 x <- as.matrix(raw_data[,seq(2,24)])
 y <- as.factor(raw_data[,25])
 
-#split into training and test data
+#
 
 #train models
 res0 <- cv.glmnet(x,y, alpha=0, type.measure = "class",family='binomial') #ridge 
