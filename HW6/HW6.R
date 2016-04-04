@@ -7,24 +7,57 @@
 #https://rpubs.com/chihst01/15922
 
 library(glmnet)
+library(MASS)
 
-##Problem 1 - linear regression
+###Problem 1 - linear regression
 
 #setup
 setwd("~/Documents/UIUC/CS 498/CS498MachineLearning/HW6/Geographical Original of Music")
 
 #read in csv file and create features and predictors
-raw_data <- read.csv("default_plus_chromatic_features_1059_tracks.txt", header = FALSE)
+raw_data <- read.csv("default_features_1059_tracks.txt", header = FALSE)
 num_features <- dim(raw_data)[2]
 num_examples <- dim(raw_data)[1]
 x <- raw_data[,1:(num_features-2)]
-latitude <- raw_data[,(num_features-1)]
-longitude <- raw_data[,num_features]
+#scaled by 90 to get box cox to work
+latitude <- raw_data[,(num_features-1)] + 90
+longitude <- raw_data[,num_features] + 90
 
-#Simple linear regression
+##Simple linear regression
 latfit <- lm(latitude ~ as.matrix(x))
+summary(latfit)
+latfitmse <- sum(latfit$residuals^2)/num_examples
+latfitmse
+par(mfrow=c(2,2))
+plot(latfit)
 
-##Problem 2 - logistic regression
+longfit <- lm(longitude ~ as.matrix(x))
+summary(longfit)
+longfitmse <- sum(longfit$residuals^2)/num_examples
+longfitmse
+par(mfrow=c(2,2))
+plot(longfit)
+
+
+##Boxcox transformation
+par(mfrow=c(1,1))
+boxcox(latfit, lambda = seq(0, 4, 1/10))
+
+#new fit for the latitude regression
+boxcoxlatfit <- lm(latitude^3.43 ~ as.matrix(x))
+summary(boxcoxlatfit)
+boxcoxlatfitmse <- sum(boxcoxlatfit$residuals^2)/num_examples
+boxcoxlatfitmse
+par(mfrow=c(2,2))
+plot(boxcoxlatfit)
+
+#boxcox for longitude
+par(mfrow=c(1,1))
+boxcox(longfit)
+
+
+
+###Problem 2 - logistic regression
 
 #setup
 setwd("~/Documents/UIUC/CS 498/CS498MachineLearning/HW6")
