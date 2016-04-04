@@ -55,6 +55,18 @@ plot(boxcoxlatfit)
 par(mfrow=c(1,1))
 boxcox(longfit)
 
+##Ridge Regression
+ridgelatitude <- cv.glmnet(as.matrix(x),latitude, alpha=0) 
+plot(ridgelatitude)
+ridgelongitude <- cv.glmnet(as.matrix(x),longitude, alpha=0) 
+plot(ridgelongitude)
+
+##Lasso Regression
+lassolatitude <- cv.glmnet(as.matrix(x),latitude, alpha=1) 
+plot(lassolatitude)
+lassolongitude <- cv.glmnet(as.matrix(x),longitude, alpha=1) 
+plot(lassolongitude)
+
 
 
 ###Problem 2 - logistic regression
