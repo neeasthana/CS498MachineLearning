@@ -8,7 +8,15 @@
 
 library(glmnet)
 
+##Problem 1 - linear regression
 
+#setup
+setwd("~/Documents/UIUC/CS 498/CS498MachineLearning/HW6/")
+
+#read in csv file
+raw_data <- read.csv("creditcard.csv", skip=1, header = TRUE)
+x <- as.matrix(raw_data[,seq(2,24)])
+y <- as.factor(raw_data[,25])
 
 
 
