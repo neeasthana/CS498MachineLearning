@@ -58,12 +58,16 @@ boxcox(longfit)
 ##Ridge Regression
 ridgelatitude <- cv.glmnet(as.matrix(x),latitude, alpha=0) 
 plot(ridgelatitude)
+min(ridgelatitude$cvm) #report minimum mse
+ridgelatitude$lambda.min #report minimum lambda
+
 ridgelongitude <- cv.glmnet(as.matrix(x),longitude, alpha=0) 
 plot(ridgelongitude)
 
 ##Lasso Regression
 lassolatitude <- cv.glmnet(as.matrix(x),latitude, alpha=1) 
 plot(lassolatitude)
+
 lassolongitude <- cv.glmnet(as.matrix(x),longitude, alpha=1) 
 plot(lassolongitude)
 
