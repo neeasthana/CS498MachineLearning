@@ -63,15 +63,35 @@ ridgelatitude$lambda.min #report minimum lambda
 
 ridgelongitude <- cv.glmnet(as.matrix(x),longitude, alpha=0) 
 plot(ridgelongitude)
+min(ridgelongitude$cvm) #report minimum mse
+ridgelongitude$lambda.min #report minimum lambda
 
 ##Lasso Regression
 lassolatitude <- cv.glmnet(as.matrix(x),latitude, alpha=1) 
 plot(lassolatitude)
+min(lassolatitude$cvm) #report minimum mse
+lassolatitude$lambda.min #report minimum lambda
 
 lassolongitude <- cv.glmnet(as.matrix(x),longitude, alpha=1) 
 plot(lassolongitude)
+min(lassolongitude$cvm) #report minimum mse
+lassolongitude$lambda.min #report minimum lambda
 
 
+##Elastic Net Regression
+alphas <- c(.25,.5,.75)
+latlambdas <- c()
+latmses <- c()
+longlambdas <- c()
+longmses <- c()
+for(a in alphas){
+  enlatitude <- cv.glmnet(as.matrix(x),latitude, alpha=a)
+  enlongitude <- cv.glmnet(as.matrix(x),longitude, alpha=a)
+  latmses <- c(latmses, min(enlatitude$cvm)) #report minimum mse
+  latlambdas <- c(latlambdas, enlatitude$lambda.min)
+  longmses <- c(longmses, min(enlongitude$cvm)) #report minimum mse
+  longlambdas <- c(longlambdas, enlongitude$lambda.min) #report minimum lambda
+}
 
 ###Problem 2 - logistic regression
 
