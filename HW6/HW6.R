@@ -21,7 +21,13 @@ num_examples <- dim(raw_data)[1]
 x <- raw_data[,1:(num_features-2)]
 #scaled by 90 to get box cox to work
 latitude <- raw_data[,(num_features-1)] + 90
-longitude <- raw_data[,num_features] + 90
+longitude <- raw_data[,num_features] + 180
+
+
+#Cross validated linear regression for comparison with other models
+simlatitude <- cv.glmnet(as.matrix(x),latitude, alpha=0, lambda = c(1e-9,1e-8))
+simlongitude <- cv.glmnet(as.matrix(x),longitude, alpha=0, lambda = c(1e-9,1e-8))
+
 
 ##Simple linear regression
 latfit <- lm(latitude ~ as.matrix(x))
@@ -92,6 +98,8 @@ for(a in alphas){
   longmses <- c(longmses, min(enlongitude$cvm)) #report minimum mse
   longlambdas <- c(longlambdas, enlongitude$lambda.min) #report minimum lambda
 }
+
+
 
 ###Problem 2 - logistic regression
 
