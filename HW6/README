@@ -1,9 +1,7 @@
-Neeraj Asthana (nasthan2) Homework 5 Code:
+Neeraj Asthana (nasthan2) Homework 6 Code:
 
-All code is contained in a file called "HW5.R"
+All code is contained in a script file called "HW6.R"
 
-This file can be run using R.
+This file can be run using R. All code for Problem 1 (linear regression) is included first under the heading "##Problem 1". The code for Problem 2 (logistic regression) is included afterwards under the heading "##Problem2".
 
-The Report is contained in a file labeled "Report.pdf"
-
-The plots are included in the report however I have also include the plots in the zip file. I have also included the jpgs for the final test image just in case those pasted in the pdf were not clear enough.
+The Report is contained in a file labeled "Homework 6 Report.pdf". All plots are included in the report as well as in the folder labelled "Plots".
