@@ -26,8 +26,9 @@ longitude <- raw_data[,num_features] + 180
 
 #Cross validated linear regression for comparison with other models
 simlatitude <- cv.glmnet(as.matrix(x),latitude, alpha=0, lambda = c(1e-9,1e-8))
+min(simlatitude$cvm)
 simlongitude <- cv.glmnet(as.matrix(x),longitude, alpha=0, lambda = c(1e-9,1e-8))
-
+min(simlongitude$cvm)
 
 ##Simple linear regression
 latfit <- lm(latitude ~ as.matrix(x))
@@ -110,8 +111,14 @@ setwd("~/Documents/UIUC/CS 498/CS498MachineLearning/HW6")
 raw_data <- read.csv("creditcard.csv", skip=1, header = TRUE)
 x <- as.matrix(raw_data[,seq(2,24)])
 y <- as.factor(raw_data[,25])
+num_examples <- dim(raw_data)[1]
+num_features <- dim(raw_data)[2]
 
-#
+#Simple unregularized Logistic regression
+logfit <- glm(y~x, family = "binomial")
+summary(logfit)
+mselogfit <- sum(logfit$residuals^2)/num_examples
+mselogfit
 
 #train models
 res0 <- cv.glmnet(x,y, alpha=0, type.measure = "class",family='binomial') #ridge 
