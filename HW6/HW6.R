@@ -98,6 +98,8 @@ for(a in alphas){
   latlambdas <- c(latlambdas, enlatitude$lambda.min)
   longmses <- c(longmses, min(enlongitude$cvm)) #report minimum mse
   longlambdas <- c(longlambdas, enlongitude$lambda.min) #report minimum lambda
+  plot(enlatitude)
+  plot(enlongitude)
 }
 
 
@@ -117,11 +119,10 @@ num_features <- dim(raw_data)[2]
 #Simple unregularized Logistic regression
 logfit <- glm(y~x, family = "binomial")
 summary(logfit)
-mselogfit <- sum(logfit$residuals^2)/num_examples
-mselogfit
+logfit$deviance
 
-#train models
-res0 <- cv.glmnet(x,y, alpha=0, type.measure = "class",family='binomial') #ridge 
+# train models
+res0 <- cv.glmnet(x,y, alpha=0, type.measure = "class",family='binomial') #ridge
 res2 <- cv.glmnet(x,y, alpha=.2, family='binomial')
 res4 <- cv.glmnet(x,y, alpha=.4, family='binomial')
 res5 <- cv.glmnet(x,y, alpha=.5, family='binomial')
