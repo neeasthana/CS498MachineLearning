@@ -6,9 +6,19 @@ library(glmnet)
 #setup
 setwd("/home/neeraj/Documents/UIUC/CS 498/CS498MachineLearning/HW7")
 
-#read in data
-locations <- read.csv("Locations.txt", header = TRUE, sep=" ")
-temps <- read.csv("Oregon_Met_Data.txt", header = TRUE, sep = " ")
+#read in data and grab relevant columns
+raw_locations <- read.csv("Locations.txt", header = TRUE, sep=" ")
+raw_temps <- read.csv("Oregon_Met_Data.txt", header = TRUE, sep = " ")
+locations <- raw_locations[,c(1,7,8)]
+temps <- raw_temps[,c(1,4,5,6)]
+
+#remove all invalid temperatures
+temps <- temps[temps$Tmin_deg_C != 9999,]
+
+#merge locations and temps to get coordinates for each observation
+data <- merge(temps, locations, by.x = "SID", by.y = "SID")
+
+
 
 srange <- c(10000 , 150000 , 200000 , 250000 , 300000 , 350000)
 
