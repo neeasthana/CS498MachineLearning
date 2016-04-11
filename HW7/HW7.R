@@ -16,8 +16,10 @@ temps <- raw_temps[,c(1,4,5,6)]
 temps <- temps[temps$Tmin_deg_C != 9999,]
 
 #merge locations and temps to get coordinates for each observation
-data <- merge(temps, locations, by.x = "SID", by.y = "SID")
+obs <- merge(temps, locations, by.x = "SID", by.y = "SID")
 
+#split by each day of the year
+daysplit <- split(obs, obs$Year)
 
 
 srange <- c(10000 , 150000 , 200000 , 250000 , 300000 , 350000)
