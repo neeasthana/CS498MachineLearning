@@ -15,11 +15,8 @@ temps <- raw_temps[,c(1,4,5,6)]
 #remove all invalid temperatures
 temps <- temps[temps$Tmin_deg_C != 9999,]
 
-#merge locations and temps to get coordinates for each observation
-obs <- merge(temps, locations, by.x = "SID", by.y = "SID")
-
-#split by each day of the year
-daysplit <- split(obs, obs$Year)
+#calculate the minimum temperature averages for each station
+means <- tapply(temps$Tmin_deg_C, temps$SID, mean)
 
 
 srange <- c(10000 , 150000 , 200000 , 250000 , 300000 , 350000)
