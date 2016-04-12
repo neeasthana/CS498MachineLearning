@@ -15,8 +15,16 @@ temps <- raw_temps[,c(1,4,5,6)]
 #remove all invalid temperatures
 temps <- temps[temps$Tmin_deg_C != 9999,]
 
-#calculate the minimum temperature averages for each station
-means <- tapply(temps$Tmin_deg_C, temps$SID, mean)
+#produce constants for easy reference
+n <- dim(locations)[1]
+m <- dim(locations)[2]+1
+
+#create matrix to store all training values
+x <- matrix(0,n,m)
+x[,1] <- locations[,1]
+
+#calculate the minimum temperature averages for each station which 
+meanTemps <- tapply(temps$Tmin_deg_C, temps$SID, mean)
 
 
 srange <- c(10000 , 150000 , 200000 , 250000 , 300000 , 350000)
