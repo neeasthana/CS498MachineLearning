@@ -68,8 +68,19 @@ for(s in srange){
     for(j in 1:gridsize)
       predictionMat[(i-1)*gridsize + j, ] <- c(xvec[i], yvec[j])
   
+  #create matrix of points that the kernel function has already evaluated
   diff_ij <- function(i,j){sqrt(rowSums((predictionMat[i,]-xmat[j,]) ^2 )) }
   sampledists <- outer(1:gridsize^2, 1:n, diff_ij)
+  samplewmat <- exp(-sampledists^2/(2*s^2))
+  
+  #create predictions at those points
+  predictions <- predict.cv.glmnet(model, samplewmat, s = 0)
+  
+  #generate the final grid for this model with specified scaling parameter
+  finalgrid <- matrix(0,gridsize, gridsize)
+  for(i in 1:gridsize)
+    for(j in 1:gridsize)
+      finalgrid[i,j] <- predictions[(i-1)*gridsize + j]
 }
 
 
