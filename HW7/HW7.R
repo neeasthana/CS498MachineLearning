@@ -49,18 +49,24 @@ y <- x[,4]
 #creates 6 different scale values based distances in msp
 srange <- seq(65000,250000, 35000)
 
-
-for(s in srange){
+lambdas <- c()
+mses <- c()
+allpreds <- matrix(0, gridsize*gridsize, length(srange))
+ 
+for(s in 1:length(srange)){
 
   #Create a matrix with all of the nonparameterized weights
   #All rows now sum to 1 after the kernel function is applied
   spaces<- dist(xmat , method = "euclidean",diag= FALSE,upper= FALSE)
   msp <- as.matrix(spaces)
-  wmat <- exp(-msp^2/(2*s^2))
+  wmat <- exp(-msp^2/(2*srange[s]^2))
   
   #nonparam <- wmat/rowSums(wmat)
   model <- cv.glmnet(wmat, as.vector(y), alpha = 1, lambda = c(0,1))
   modelmse <- model$cvm[2]
+  
+  mses <- c(mses, modelmse)
+  lambdas <- c(lambdas, model$lambda[2])
   
   #create smoothing points to then be able to create plot
   predictionMat <- matrix(NA, gridsize^2, 2)
@@ -71,18 +77,30 @@ for(s in srange){
   #create matrix of points that the kernel function has already evaluated
   diff_ij <- function(i,j){sqrt(rowSums((predictionMat[i,]-xmat[j,]) ^2 )) }
   sampledists <- outer(1:gridsize^2, 1:n, diff_ij)
-  samplewmat <- exp(-sampledists^2/(2*s^2))
+  samplewmat <- exp(-sampledists^2/(2*srange[s]^2))
   
   #create predictions at those points
   predictions <- predict.cv.glmnet(model, samplewmat, s = 0)
   
-  #generate the final grid for this model with specified scaling parameter
-  finalgrid <- matrix(0,gridsize, gridsize)
-  for(i in 1:gridsize)
-    for(j in 1:gridsize)
-      finalgrid[i,j] <- predictions[(i-1)*gridsize + j]
+  allpreds[,s] <- predictions 
 }
 
+#find which scaling parameter had the lowest mses and report that scale
+best <- which.min(mses)
+print(srange[best])
+print(mses[best])
+
+
+#generate the final grid for this model with smallest mse
+bestgridpred <- allpreds[,s]
+finalgrid <- matrix(0,gridsize, gridsize)
+for(i in 1:gridsize)
+  for(j in 1:gridsize)
+    finalgrid[i,j] <- bestgridpred[(i-1)*gridsize + j]
+
+#produce an heat map image
+imagescale <- max(abs(min(bestgridpred)), abs(max(bestgridpred)))
+image(yvec, xvec, (finalgrid + imagescale)/(2*imagescale))
 
 ##Problem 2
 
