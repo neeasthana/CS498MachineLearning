@@ -92,7 +92,7 @@ print(mses[best])
 
 
 #generate the final grid for this model with smallest mse
-bestgridpred <- allpreds[,s]
+bestgridpred <- allpreds[,best]
 finalgrid <- matrix(0,gridsize, gridsize)
 for(i in 1:gridsize)
   for(j in 1:gridsize)
@@ -100,7 +100,7 @@ for(i in 1:gridsize)
 
 #produce an heat map image
 imagescale <- max(abs(min(bestgridpred)), abs(max(bestgridpred)))
-image(yvec, xvec, (finalgrid + imagescale)/(2*imagescale))
+image(yvec, xvec, (finalgrid + imagescale)/(2*imagescale), xlab="Latitude", ylab = "Longitude", useRaster=TRUE)
 
 ##Problem 2
 
