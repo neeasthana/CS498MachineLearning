@@ -31,6 +31,13 @@ x[,3] <- locations[,3]
 meanTemps <- tapply(temps$Tmin_deg_C, temps$SID, mean)
 x[,4] <- meanTemps
 
+#setup predictors and response
+xmat <- x[,2:3]
+y <- x[,4]
+
+#distances between base points
+spaces<- dist(xmat , method = "euclidean",diag= FALSE,upper= FALSE)
+msp <- as.matrix(spaces)
 
 ##Problem 1 - simple nonparametric regression
 #setup response grid
@@ -41,24 +48,17 @@ ymax <- max(xmat[,2])
 xvec <- seq(xmin,xmax,length=gridsize)
 yvec <- seq(ymin,ymax,length=gridsize)
 
-
-#setup predictors and response
-xmat <- x[,2:3]
-y <- x[,4]
-
 #creates 6 different scale values based distances in msp
 srange <- seq(65000,250000, 35000)
 
 lambdas <- c()
 mses <- c()
 allpreds <- matrix(0, gridsize*gridsize, length(srange))
- 
+
 for(s in 1:length(srange)){
 
-  #Create a matrix with all of the nonparameterized weights
+  #Create a matrix with all of the parameterized weights
   #All rows now sum to 1 after the kernel function is applied
-  spaces<- dist(xmat , method = "euclidean",diag= FALSE,upper= FALSE)
-  msp <- as.matrix(spaces)
   wmat <- exp(-msp^2/(2*srange[s]^2))
   
   #nonparam <- wmat/rowSums(wmat)
@@ -103,7 +103,13 @@ imagescale <- max(abs(min(bestgridpred)), abs(max(bestgridpred)))
 image(yvec, xvec, (finalgrid + imagescale)/(2*imagescale), xlab="Latitude", ylab = "Longitude", useRaster=TRUE)
 
 ##Problem 2
+#create training points with scales 
+num_train <- n*length(srange)
+wmat_comb <- matrix(0,n,num_train)
+for(s in 1:length(srange)){
+  wmats <- exp(-msp^2/(2*srange[s]))
+  wmat_comb[,first:last] <- wmats
+}
+
 
 ##Problem 3
-
-##Extra Credit
