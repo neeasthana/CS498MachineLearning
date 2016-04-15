@@ -100,16 +100,62 @@ for(i in 1:gridsize)
 
 #produce an heat map image
 imagescale <- max(abs(min(bestgridpred)), abs(max(bestgridpred)))
-image(yvec, xvec, (finalgrid + imagescale)/(2*imagescale), xlab="Latitude", ylab = "Longitude", useRaster=TRUE)
+image.plot(yvec, xvec, (finalgrid + imagescale)/(2*imagescale), xlab="Latitude", ylab = "Longitude", add=TRUE)
 
-##Problem 2
+
+
+
+
+##Problem 2 and 3
+##Problem 2 and 3
+lambdas <- c()
+mses <- c()
+alphas <- c(1,.25,.5,.75)
+
+
 #create training points with scales 
 num_train <- n*length(srange)
 wmat_comb <- matrix(0,n,num_train)
 for(s in 1:length(srange)){
-  wmats <- exp(-msp^2/(2*srange[s]))
+  wmats <- exp(-msp^2/(2*srange[s]^2))
   wmat_comb[,first:last] <- wmats
 }
 
-
-##Problem 3
+for (a in alphas){
+  model2 <- cv.glmnet(wmat_comb, as.vector(y), alpha = a)
+  
+  #errors from model
+  plot(model2)
+  modelmse <- min(model2$cvm)
+  mses <- c(mses, modelmse)
+  minlambda <-model2$lambda.min
+  lambdas <- c(lambdas, minlambda)
+  
+  #create smoothing points to then be able to create plot
+  predictionMat <- matrix(NA, gridsize^2, 2)
+  for(i in 1:gridsize)
+    for(j in 1:gridsize)
+      predictionMat[(i-1)*gridsize + j, ] <- c(xvec[i], yvec[j])
+  
+  #create matrix of points that the kernel function has already evaluated
+  diff_ij <- function(i,j){sqrt(rowSums((predictionMat[i,]-xmat[j,]) ^2 )) }
+  sampledists <- outer(1:gridsize^2, 1:n, diff_ij)
+  
+  full_pred <- matrix(0,gridsize^2, length(srange)*n)
+  for (s in 1:length(srange)){
+    full_pred[,(((s-1)*n) + 1):(s*n)] <- exp(-sampledists^2/(2*srange[s]^2))
+  }
+  
+  #create predictions at those points
+  predictions <- predict.cv.glmnet(model2, full_pred, s = minlambda)
+  
+  bestgridpred <-predictions
+  finalgrid <- matrix(0,gridsize, gridsize)
+  for(i in 1:gridsize)
+    for(j in 1:gridsize)
+      finalgrid[i,j] <- bestgridpred[(i-1)*gridsize + j]
+  
+  #produce an heat map image
+  imagescale <- max(abs(min(bestgridpred)), abs(max(bestgridpred)))
+  image.plot(yvec, xvec, (finalgrid + imagescale)/(2*imagescale), xlab="Latitude", ylab = "Longitude", add=TRUE)
+}
