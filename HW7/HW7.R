@@ -2,6 +2,7 @@
 ##CS 498 HW7
 
 library(glmnet)
+library(fields)
 
 #setup
 setwd("/home/neeraj/Documents/UIUC/CS 498/CS498MachineLearning/HW7")
@@ -107,7 +108,6 @@ image.plot(yvec, xvec, (finalgrid + imagescale)/(2*imagescale), xlab="Latitude",
 
 
 ##Problem 2 and 3
-##Problem 2 and 3
 lambdas <- c()
 mses <- c()
 alphas <- c(1,.25,.5,.75)
@@ -118,6 +118,8 @@ num_train <- n*length(srange)
 wmat_comb <- matrix(0,n,num_train)
 for(s in 1:length(srange)){
   wmats <- exp(-msp^2/(2*srange[s]^2))
+  first <- ((s-1)*n)+1
+  last <- (s*n)
   wmat_comb[,first:last] <- wmats
 }
 
@@ -157,5 +159,5 @@ for (a in alphas){
   
   #produce an heat map image
   imagescale <- max(abs(min(bestgridpred)), abs(max(bestgridpred)))
-  image.plot(yvec, xvec, (finalgrid + imagescale)/(2*imagescale), xlab="Latitude", ylab = "Longitude", add=TRUE)
+  image.plot(yvec, xvec, (finalgrid + imagescale)/(2*imagescale), xlab="Latitude", ylab = "Longitude")
 }
