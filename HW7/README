@@ -1,9 +1,9 @@
-Neeraj Asthana (nasthan2) Homework 6 Code:
+Neeraj Asthana (nasthan2) Homework 7 Code:
 
-All code is contained in a script file called "HW6.R"
+All code is contained in a script file called "HW7.R"
 
 This file can be run using R. 
 
-All code for Problem 1 (linear regression) is included first under the heading "##Problem 1". I used the dataset with 70 predictors. The code for Problem 2 (logistic regression) is included afterwards under the heading "##Problem2". I generated a csv from the data from the xls file to operate on it. 
+All code for Problem 1 (simple regression) is included first under the heading "##Problem 1".  The code for Problem 2 and 3 (lasso and elastic net) is included afterwards under the heading "##Problem2 and 3". 
 
-The Report is contained in a file labeled "Homework 6 Report.pdf". All plots are included in the report as well as in the folder labelled "Plots".
+The Report is contained in a file labeled "Homework 7 Report.pdf". All heat map plots are included in the report as well as in the folder labelled "Plots".
