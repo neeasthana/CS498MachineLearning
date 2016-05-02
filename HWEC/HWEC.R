@@ -14,4 +14,16 @@ data <- t(as.matrix(raw_data))
 raw_tumors <- read.csv("tumors.txt", header = FALSE, sep = " ")
 tumors <- c(raw_tumors < 0)*1
 
-#preform logistic regression using cross 
+#preform logistic regression using cross validated lasso logistic regression
+set.seed(1)
+model <- cv.glmnet(data, tumors, family = "binomial", type.measure = "deviance", alpha = 1, nfolds = 6)
+
+#evaluate performance of model (deviance)
+plot(model)
+minlambda <- model$lambda.min
+deviance <- model$cvm[which(model$lambda == minlambda)]
+
+set.seed(1)
+modelauc <- cv.glmnet(data, tumors, family = "binomial", type.measure = "auc", alpha = 1, nfolds = 6)
+minauclambda <- modelauc$lambda.min
+auc <- modelauc$cvm[which(modelauc$lambda == minauclambda)]
