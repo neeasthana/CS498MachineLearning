@@ -11,3 +11,7 @@ raw_data <- read.csv("genes.txt", header = FALSE, sep = " ")
 data <- t(as.matrix(raw_data))
 
 #read labels
+raw_tumors <- read.csv("tumors.txt", header = FALSE, sep = " ")
+tumors <- c(raw_tumors < 0)*1
+
+#preform logistic regression using cross 
