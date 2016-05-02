@@ -26,4 +26,9 @@ deviance <- model$cvm[which(model$lambda == minlambda)]
 set.seed(1)
 modelauc <- cv.glmnet(data, tumors, family = "binomial", type.measure = "auc", alpha = 1, nfolds = 6)
 minauclambda <- modelauc$lambda.min
-auc <- modelauc$cvm[which(modelauc$lambda == minauclambda)]
+#get auc of model with the lowest deviance
+auc <- modelauc$cvm[which(model$lambda == minlambda)]
+
+minlambda
+deviance
+auc
