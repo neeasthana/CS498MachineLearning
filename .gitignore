@@ -4,6 +4,7 @@
 #Hide all large Training sets
 *.txt
 *.dat
+*.gz
 pubfig_kaggle_eval.txt
 pubfig_train_50000_pairs.txt
 
