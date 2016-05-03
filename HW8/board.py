@@ -100,27 +100,14 @@ def train():
             tf.histogram_summary(layer_name + '/activations', activations)
             return activations
 
-    #W_conv1 = weight_variable([5, 5, 1, 32])
-    #b_conv1 = bias_variable([32])
-
-    #second and third are the image sizes and the 4th arg is number of color channels
+    #input
     x_image = tf.reshape(x, [-1,28,28,1])
 
+    #layer 1
     layer1 = conv_layer(x_image, [5, 5, 1, 32], 32, 'layer1')
-
-    #convolve x_image with the weight tensor, add the bias, apply the ReLU function, and finally max pool
-    #h_conv1 = tf.nn.relu(conv2d(x_image, W_conv1) + b_conv1)
-    #h_pool1 = max_pool_2x2(h_conv1)
-
 
 
     #second layer
-    #W_conv2 = weight_variable([5, 5, 32, 64])
-    #b_conv2 = bias_variable([64])
-
-    #h_conv2 = tf.nn.relu(conv2d(h_pool1, W_conv2) + b_conv2)
-    #h_pool2 = max_pool_2x2(h_conv2)
-
     layer2 = conv_layer(layer1, [5, 5, 32, 64], 64, 'layer2')
 
     #Densely connected layer with all 1024 neurons
@@ -132,21 +119,10 @@ def train():
 
 
     #Implement Dropout
-    #keep_prob = tf.placeholder(tf.float32)
     h_fc1_drop = tf.nn.dropout(h_fc1, keep_prob)
 
-
     #Softmax Readout layer
-    #W_fc2 = weight_variable([1024, 10])
-    #b_fc2 = bias_variable([10])
-
-    #y=tf.nn.softmax(tf.matmul(h_fc1_drop, W_fc2) + b_fc2)
     y = nn_layer(h_fc1_drop, 1024, 10, 'output', act=tf.nn.softmax)
-
-    #hidden1 = nn_layer(x, 784, 500, 'layer1')
-    #dropped = tf.nn.dropout(hidden1, keep_prob)
-    #y = nn_layer(dropped, 500, 10, 'layer2', act=tf.nn.softmax)
-
 
     with tf.name_scope('cross_entropy'):
         diff = y_ * tf.log(y)
