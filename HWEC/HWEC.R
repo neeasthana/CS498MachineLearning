@@ -22,6 +22,7 @@ model <- cv.glmnet(data, tumors, family = "binomial", type.measure = "deviance",
 plot(model)
 minlambda <- model$lambda.min
 deviance <- model$cvm[which(model$lambda == minlambda)]
+predictors <- model$nzero[which(model$lambda == minlambda)]
 
 set.seed(1)
 modelauc <- cv.glmnet(data, tumors, family = "binomial", type.measure = "auc", alpha = 1, nfolds = 6)
@@ -32,3 +33,4 @@ auc <- modelauc$cvm[which(model$lambda == minlambda)]
 minlambda
 deviance
 auc
+predictors
