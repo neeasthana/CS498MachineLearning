@@ -1,0 +1,11 @@
+Neeraj Asthana (nasthan2) Homework 8 Code:
+
+All code is contained in their respective folders (ex. part1, part2, etc.)
+
+All files can be run using Python. 
+
+Parts 1 and 2 can be run on their own.
+
+In order to get a proper accuracy graph from cifar10 data (parts 3 and 4), I ran the train and eval scripts in separate processes. 
+
+The Report is contained in a file labeled "Homework 8 Report.pdf". All screenshots of accuracy graphs from tensorboard are included in the report as well as in the folder labelled "Screenshots".
